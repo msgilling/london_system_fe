@@ -7,6 +7,7 @@ import axios from 'axios'
 export default function Login() {
     const [ email, setEmail ] = useState('')
     const [ password, setPassword ] = useState('')
+    const [ loginFail, setLoginFail ] = useState(false)
     const navigate = useNavigate()
 
     const updateEmail = (e) => {
@@ -23,10 +24,17 @@ export default function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        const result = await axios.post("http://127.0.0.1:5000/login", { "email": email, "password": password })
-        console.log(result)
-        if(result.status === 200){
-            navigate('/')
+        try {
+            const result = await axios.post("http://127.0.0.1:5000/login", { "email": email, "password": password })
+            if(result.status === 200){
+                navigate('/')
+            } else {
+                setLoginFail(true)
+            }
+        } catch (err) {
+            setLoginFail(true)
+            setEmail('')
+            setPassword('')
         }
     }
 
@@ -49,6 +57,7 @@ export default function Login() {
             <Button variant="primary" type="submit" onClick={handleSubmit}>
                 Sign in
             </Button>
+            {loginFail && <p>Login Failed, check email and password then try again</p>}
         </Form>
         <div>No account? <NavLink to="/register">Register here!</NavLink></div>
     </div>
